@@ -18,26 +18,28 @@ body {
   text-align: center;
   max-width: 500px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-  transition: background-color 1s ease-in-out; /* Suave transição de cor */
+  transition: background-color 1s ease-in-out;
 }
 
 h1 {
-  font-size: 2.8em; /* Tamanho maior */
-  color: #ffcc00;
+  font-size: 2.8em;
+  color: white; /* Título em branco */
   margin-bottom: 10px;
   text-transform: uppercase;
 }
 
 #delay-message {
-  font-size: 1.8em; /* Aumentado para maior legibilidade */
+  font-size: 1.8em;
   margin-bottom: 20px;
+  color: white; /* Frases em branco */
 }
 
 #emoji-display {
-  font-size: 5rem; /* Tamanho grande para destaque */
-  animation: emojiBounce 1s infinite ease-in-out; /* Animação de bounce */
+  font-size: 5rem;
+  animation: emojiBounce 1s infinite ease-in-out;
 }
 
+/* Animação do emoji */
 @keyframes emojiBounce {
   0%, 100% {
     transform: scale(1);
@@ -66,7 +68,7 @@ h1 {
 
 #comments-status {
   margin-top: 20px;
-  font-size: 1.5em; /* Maior para o estado final */
+  font-size: 1.5em;
   color: #00ff00;
   display: none;
 }
