@@ -18,9 +18,23 @@ function updateBackgroundColor() {
   gameContainer.style.backgroundColor = randomColor;
 }
 
-// Simular a espera pelo delay
-let delayTimeout;
-let commentsArrived = false;
+// Atualiza a barra de progresso
+function updateProgressBar(duration) {
+  const progressBar = document.getElementById("progress-bar");
+  let startTime = Date.now();
+
+  function step() {
+    const elapsedTime = Date.now() - startTime;
+    const progress = Math.min((elapsedTime / duration) * 100, 100);
+    progressBar.style.width = `${progress}%`;
+
+    if (progress < 100) {
+      requestAnimationFrame(step);
+    }
+  }
+
+  requestAnimationFrame(step);
+}
 
 // Mensagens engraçadas para exibir enquanto se espera
 const funnyMessages = [
@@ -44,20 +58,20 @@ function startDelayAnimation() {
 
   // Atualiza mensagens, emojis e cor de fundo a cada 2 segundos
   delayTimeout = setInterval(() => {
-    if (!commentsArrived) {
-      delayMessage.textContent = funnyMessages[messageIndex];
-      updateEmoji();
-      updateBackgroundColor();
-      messageIndex = (messageIndex + 1) % funnyMessages.length;
-    }
+    delayMessage.textContent = funnyMessages[messageIndex];
+    updateEmoji();
+    updateBackgroundColor();
+    messageIndex = (messageIndex + 1) % funnyMessages.length;
   }, 2000);
+
+  // Inicia a barra de progresso (30s)
+  updateProgressBar(30000);
 }
 
 // Simular chegada de comentários em tempo real
 function simulateComments() {
   const commentsStatus = document.getElementById("comments-status");
   setTimeout(() => {
-    commentsArrived = true;
     clearInterval(delayTimeout);
     document.getElementById("animation").style.display = "none";
     commentsStatus.textContent = "Chegaram as respostas! Finalmente!";
