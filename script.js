@@ -1,11 +1,21 @@
 // Lista de emojis
 const emojis = ["🤔", "🎉", "😅", "😂", "🔥", "👏", "👍", "❤️", "😍", "💪", "🤩", "🌟", "🎯"];
 
+// Lista de cores de fundo
+const backgroundColors = ["#FF5733", "#33C1FF", "#8D33FF", "#FF33A2", "#33FF57", "#FFC733", "#FF5733"];
+
 // Atualiza o emoji exibido
 function updateEmoji() {
   const emojiDisplay = document.getElementById("emoji-display");
   const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
   emojiDisplay.textContent = randomEmoji;
+}
+
+// Atualiza a cor de fundo
+function updateBackgroundColor() {
+  const gameContainer = document.getElementById("game-container");
+  const randomColor = backgroundColors[Math.floor(Math.random() * backgroundColors.length)];
+  gameContainer.style.backgroundColor = randomColor;
 }
 
 // Simular a espera pelo delay
@@ -32,11 +42,12 @@ function startDelayAnimation() {
   const delayMessage = document.getElementById("delay-message");
   let messageIndex = 0;
 
-  // Atualiza mensagens e emojis a cada 2 segundos
+  // Atualiza mensagens, emojis e cor de fundo a cada 2 segundos
   delayTimeout = setInterval(() => {
     if (!commentsArrived) {
       delayMessage.textContent = funnyMessages[messageIndex];
       updateEmoji();
+      updateBackgroundColor();
       messageIndex = (messageIndex + 1) % funnyMessages.length;
     }
   }, 2000);
