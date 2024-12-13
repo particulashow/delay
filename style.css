@@ -46,6 +46,32 @@ h1 {
   }
 }
 
+/* Barra de Progresso */
+.progress-bar {
+  margin-top: 20px;
+  width: 100%;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progress {
+  height: 100%;
+  background: #ffcc00;
+  width: 0%; /* Inicialmente vazio */
+  animation: progress 30s linear forwards; /* Preenchimento ao longo de 30s */
+}
+
+@keyframes progress {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
 #comments-status {
   margin-top: 20px;
   font-size: 1.2em;
