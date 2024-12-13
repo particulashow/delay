@@ -23,7 +23,7 @@ body {
 
 h1 {
   font-size: 2.8em;
-  color: white; /* Título em branco */
+  color: white;
   margin-bottom: 10px;
   text-transform: uppercase;
 }
@@ -31,7 +31,7 @@ h1 {
 #delay-message {
   font-size: 1.8em;
   margin-bottom: 20px;
-  color: white; /* Frases em branco */
+  color: white;
 }
 
 #emoji-display {
@@ -63,7 +63,7 @@ h1 {
   height: 100%;
   background: #ffcc00;
   width: 0%; /* Inicialmente vazio */
-  animation: progress 30s linear forwards; /* Preenchimento ao longo de 30s */
+  transition: width 0.5s ease-out;
 }
 
 #comments-status {
