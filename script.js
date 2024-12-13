@@ -31,7 +31,7 @@ function startDelayAnimation() {
   }, 2000);
 }
 
-// Simular chegada de comentários em tempo real (usando WebSocket no futuro)
+// Simular chegada de comentários em tempo real
 function simulateComments() {
   const commentsStatus = document.getElementById("comments-status");
   setTimeout(() => {
@@ -43,6 +43,6 @@ function simulateComments() {
   }, 30000); // Simula 30 segundos de delay
 }
 
-// Iniciar animação ao carregar a página
+// Iniciar animação
 startDelayAnimation();
 simulateComments();
