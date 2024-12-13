@@ -1,4 +1,3 @@
-/* Fonte e estilo global */
 body {
   font-family: 'Montserrat', sans-serif;
   background: transparent;
@@ -33,39 +32,17 @@ h1 {
   margin-bottom: 20px;
 }
 
-.spinner {
-  border: 6px solid rgba(255, 255, 255, 0.3);
-  border-top: 6px solid #ffcc00;
-  border-radius: 50%;
-  width: 80px;
-  height: 80px;
-  animation: spin 1s linear infinite;
-  margin: 0 auto;
+#emoji-display {
+  font-size: 5rem; /* Tamanho grande para destaque */
+  animation: emojiBounce 1s infinite ease-in-out; /* Animação de bounce */
 }
 
-/* Barra de Progresso */
-.progress-bar {
-  margin-top: 20px;
-  width: 100%;
-  height: 10px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 5px;
-  overflow: hidden;
-}
-
-.progress {
-  width: 0%;
-  height: 100%;
-  background: #ffcc00;
-  animation: progress 30s linear forwards;
-}
-
-@keyframes progress {
-  0% {
-    width: 0%;
+@keyframes emojiBounce {
+  0%, 100% {
+    transform: scale(1);
   }
-  100% {
-    width: 100%;
+  50% {
+    transform: scale(1.2);
   }
 }
 
@@ -74,13 +51,4 @@ h1 {
   font-size: 1.2em;
   color: #00ff00;
   display: none;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
 }
