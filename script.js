@@ -17,7 +17,7 @@ const funnyMessages = [
   "Vamos esperar… mas com estilo.",
   "Já agora, alguém sabe quanto tempo dura o delay no YouTube?",
   "As respostas estão a caminho… mas deve ser por carta.",
-  "Ainda está alguém por aí?.",
+  "Ainda está alguém por aí?",
   "Enquanto espero, vou refletir sobre o sentido da vida.",
   "O delay deve gostar de suspense, mas eu não!",
   "Será que estão a pensar ou só a olhar para o ecrã?",
