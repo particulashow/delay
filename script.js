@@ -1,3 +1,13 @@
+// Lista de emojis
+const emojis = ["🤔", "🎉", "😅", "😂", "🔥", "👏", "👍", "❤️", "😍", "💪", "🤩", "🌟", "🎯"];
+
+// Atualiza o emoji exibido
+function updateEmoji() {
+  const emojiDisplay = document.getElementById("emoji-display");
+  const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+  emojiDisplay.textContent = randomEmoji;
+}
+
 // Simular a espera pelo delay
 let delayTimeout;
 let commentsArrived = false;
@@ -22,10 +32,11 @@ function startDelayAnimation() {
   const delayMessage = document.getElementById("delay-message");
   let messageIndex = 0;
 
-  // Trocar mensagens a cada 2 segundos
+  // Atualiza mensagens e emojis a cada 2 segundos
   delayTimeout = setInterval(() => {
     if (!commentsArrived) {
       delayMessage.textContent = funnyMessages[messageIndex];
+      updateEmoji();
       messageIndex = (messageIndex + 1) % funnyMessages.length;
     }
   }, 2000);
@@ -43,6 +54,6 @@ function simulateComments() {
   }, 30000); // Simula 30 segundos de delay
 }
 
-// Iniciar animação
+// Inicia animação ao carregar a página
 startDelayAnimation();
 simulateComments();
