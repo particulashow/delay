@@ -4,25 +4,18 @@ let commentsArrived = false;
 
 // Mensagens engraçadas para exibir enquanto se espera
 const funnyMessages = [
-  "Estamos a esperar… mas com estilo.",
-  "Talvez a Internet esteja a tomar um café.",
-  "Já agora, alguém sabe quanto tempo dura um delay no YouTube?",
-  "O apresentador está a segurar o riso. Escrevam rápido.",
-  "A resposta está a caminho… pelo correio.",
-  "Acho que o delay foi para férias. Volta já.",
-  "Se o delay fosse mais rápido, chamava-se resposta.",
-  "Enquanto isso, podemos refletir sobre o sentido da vida.",
-  "O delay gosta de suspense. Nós não.",
+  "Vamos esperar… mas com estilo.",
+  "Já agora, alguém sabe quanto tempo dura o delay no YouTube?",
+  "As respostas estão a caminho… mas deve ser por carta.",
+  "Ainda está alguém por aí?.",
+  "Enquanto espero, vou refletir sobre o sentido da vida.",
+  "O delay deve gostar de suspense, mas eu não!",
   "Será que estão a pensar ou só a olhar para o ecrã?",
-  "Pessoal, o delay está em greve. Força nos comentários!",
   "Alguém viu um comentário? Está desaparecido.",
-  "Tempo é relativo… no YouTube, é infinito.",
-  "O apresentador parece um quadro. Escrevam algo.",
-  "Enquanto esperamos, porque não fazer um Sudoku?",
-  "Já agora, qual é o vosso prato preferido? Só para passar o tempo.",
-  "A Internet é lenta. Mas nós acreditamos em vocês.",
+  "Tempo é relativo… mas no YouTube parece infinito.",
+  "Já pareço um quadro. Escrevam algo!",
   "Se o delay fosse um filme, seria um drama.",
-  "A culpa é sempre do Wi-Fi. Ou do gato no router."
+  "A culpa deve ser do Wi-Fi. Ou têm um gato no router?"
 ];
 
 function startDelayAnimation() {
