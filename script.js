@@ -1,22 +1,25 @@
 const params = new URLSearchParams(window.location.search);
 
 const title = params.get("title") || "Delay vs Orador";
-const seconds = Math.max(3, parseInt(params.get("seconds") || "30", 10));
+const seconds = Math.max(3, parseInt(params.get("seconds") || "30", 10));          // duração do ciclo da barra
+const phraseEvery = Math.max(2, parseInt(params.get("phraseEvery") || "4", 10));  // troca de frase
 const domain = (params.get("domain") || "http://localhost:3900").replace(/\/$/, "");
 
-// Frases por URL (se vier vazio, usa as default)
-// Separador: |
+// frases por URL (separadas por |)
 const phrasesParam = params.get("phrases") || "";
 const defaultPhrases = [
   "Vamos esperar… mas com estilo.",
+  "Já agora, alguém sabe quanto tempo dura o delay no YouTube?",
   "As respostas estão a caminho… mas deve ser por carta.",
+  "Ainda está alguém por aí?",
+  "Enquanto espero, vou refletir sobre o sentido da vida.",
   "O delay deve gostar de suspense, mas eu não!",
+  "Será que estão a pensar ou só a olhar para o ecrã?",
+  "Alguém viu um comentário? Está desaparecido.",
+  "Tempo é relativo… mas no YouTube parece infinito.",
   "Já pareço um quadro. Escrevam algo!",
   "Se o delay fosse um filme, seria um drama.",
-  "Tempo é relativo… mas no YouTube parece infinito.",
-  "Ainda está alguém por aí?",
-  "Alguém viu um comentário? Está desaparecido.",
-  "Enquanto espero, vou refletir sobre o sentido da vida."
+  "A culpa deve ser do Wi-Fi. Ou têm um gato no router?"
 ];
 
 let phrases = defaultPhrases;
@@ -25,10 +28,10 @@ if (phrasesParam.trim()) {
     .split("|")
     .map(s => decodeURIComponent(s).trim())
     .filter(Boolean);
+
   if (!phrases.length) phrases = defaultPhrases;
 }
 
-// Emojis: mistura “leve” (sem excesso visual)
 const EMOJIS = [
   "⏳","🛰️","📡","🧠","🫠","🫡","🤹‍♂️","🧃","🍿","🫧",
   "👀","🧩","🌀","✨","💬","📨","🐢","🚀","🎭","🕰️"
@@ -41,13 +44,15 @@ const $status = document.getElementById("status");
 
 $title.textContent = decodeURIComponent(title);
 
-let idx = 0;
-let startTs = performance.now();
 let running = true;
 let seenAnyChat = false;
 
+let phraseIndex = 0;
+let barStartTs = performance.now();
+let phraseTimer = null;
+
 // =====================
-// Frases (loop) + animação
+// Frases
 // =====================
 function showPhrase(text) {
   $phrase.style.animation = "none";
@@ -57,39 +62,42 @@ function showPhrase(text) {
 }
 
 function withRandomEmoji(text) {
-  // 70% das vezes mete emoji no fim, 30% no início
   const e = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
   const mode = Math.random();
-  if (mode < 0.3) return `${e} ${text}`;
-  if (mode < 0.7) return `${text} ${e}`;
+  if (mode < 0.33) return `${e} ${text}`;
+  if (mode < 0.66) return `${text} ${e}`;
   return `${e} ${text} ${e}`;
 }
 
-function cyclePhrase() {
-  idx = (idx + 1) % phrases.length;
-  showPhrase(withRandomEmoji(phrases[idx]));
+function nextPhrase() {
+  if (!running) return;
+  phraseIndex = (phraseIndex + 1) % phrases.length;
+  showPhrase(withRandomEmoji(phrases[phraseIndex]));
 }
 
-// Primeira frase
-showPhrase(withRandomEmoji(phrases[0]));
+function startPhraseLoop() {
+  // primeira frase
+  showPhrase(withRandomEmoji(phrases[0]));
+  // loop independente
+  phraseTimer = setInterval(nextPhrase, phraseEvery * 1000);
+}
 
 // =====================
-// Barra progressiva
+// Barra progressiva (loop)
 // =====================
-function tickProgress(now) {
+function tickBar(now) {
   if (!running) return;
 
-  const elapsed = (now - startTs) / 1000;
+  const elapsed = (now - barStartTs) / 1000;
   const pct = Math.min(100, (elapsed / seconds) * 100);
   $bar.style.width = pct.toFixed(2) + "%";
 
   if (elapsed >= seconds) {
-    startTs = now;
+    barStartTs = now;
     $bar.style.width = "0%";
-    cyclePhrase();
   }
 
-  requestAnimationFrame(tickProgress);
+  requestAnimationFrame(tickBar);
 }
 
 // =====================
@@ -102,8 +110,8 @@ function spawnFloatingEmoji() {
   emoji.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
   emoji.style.position = "fixed";
   emoji.style.left = `${Math.random() * 92 + 4}vw`;
-  emoji.style.bottom = `-20px`;
-  emoji.style.fontSize = `${Math.floor(Math.random() * 18) + 16}px`;
+  emoji.style.bottom = `-24px`;
+  emoji.style.fontSize = `${Math.floor(Math.random() * 18) + 18}px`;
   emoji.style.opacity = "0";
   emoji.style.pointerEvents = "none";
   emoji.style.filter = "drop-shadow(0 10px 22px rgba(0,0,0,0.55))";
@@ -111,29 +119,20 @@ function spawnFloatingEmoji() {
 
   document.body.appendChild(emoji);
 
-  // entrada
   requestAnimationFrame(() => {
     emoji.style.opacity = "0.85";
     emoji.style.transform = `translateY(-${Math.random() * 55 + 55}vh)`;
   });
 
-  // saída
-  setTimeout(() => {
-    emoji.style.opacity = "0";
-  }, 2600);
+  setTimeout(() => { emoji.style.opacity = "0"; }, 2600);
+  setTimeout(() => { emoji.remove(); }, 3400);
 
-  // cleanup
-  setTimeout(() => {
-    emoji.remove();
-  }, 3400);
-
-  // ritmo: 1 emoji a cada 700–1200ms (subtil)
-  const nextIn = Math.floor(Math.random() * 500) + 700;
+  const nextIn = Math.floor(Math.random() * 500) + 700; // 700–1200ms
   setTimeout(spawnFloatingEmoji, nextIn);
 }
 
 // =====================
-// Wordcloud: detecta primeiro comentário
+// Wordcloud: pára no 1º comentário
 // =====================
 async function pollWordcloud() {
   if (!running) return;
@@ -149,7 +148,6 @@ async function pollWordcloud() {
       return;
     }
 
-    // Se não houver comentários ainda, continua a sondar
     $status.textContent = "À espera do primeiro comentário…";
   } catch (e) {
     $status.textContent = "Sem ligação ao wordcloud (confirma domain/3900).";
@@ -160,14 +158,21 @@ async function pollWordcloud() {
 
 function stopOnFirstComment() {
   running = false;
+
+  if (phraseTimer) clearInterval(phraseTimer);
+
   $bar.style.width = "100%";
   $status.textContent = "Chegou! ✅";
+  $status.classList.add("good");
+
   showPhrase("Ok… agora sim. Bora lá. 🎬✨");
 }
 
 // (Opcional) limpar no arranque
 fetch(`${domain}/clear-chat`, { mode: "no-cors" }).catch(() => {});
 
-requestAnimationFrame(tickProgress);
+// start
+startPhraseLoop();
+requestAnimationFrame(tickBar);
 spawnFloatingEmoji();
 pollWordcloud();
