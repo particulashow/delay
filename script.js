@@ -3,7 +3,7 @@ const params = new URLSearchParams(window.location.search);
 const title = params.get("title") || "Delay vs Orador";
 const seconds = Math.max(3, parseInt(params.get("seconds") || "30", 10));          // duração do ciclo da barra
 const phraseEvery = Math.max(2, parseInt(params.get("phraseEvery") || "4", 10));  // troca de frase
-const domain = (params.get("domain") || "http://localhost:3900").replace(/\/$/, "");
+const domain = (params.get("domain") || "http://localhost:4900").replace(/\/$/, "");
 
 // frases por URL (separadas por |)
 const phrasesParam = params.get("phrases") || "";
