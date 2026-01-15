@@ -1,24 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-PT">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Delay vs Salino</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Delay Overlay</title>
+  <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-  <div id="game-container">
-    <h1>Delay vs Salino</h1>
-    <div id="animation">
-      <p id="delay-message">O delay está a decidir a sua resposta...</p>
-      <div id="emoji-display">🤔</div>
-      <div class="progress-bar">
-        <div class="progress"></div>
-      </div>
+  <div class="wrap">
+    <div class="title" id="title">Delay vs Orador</div>
+
+    <div class="bubble" id="bubble">
+      <div class="phrase" id="phrase">A aquecer o suspense…</div>
     </div>
-    <p id="comments-status"></p>
+
+    <div class="bar">
+      <div class="barFill" id="barFill"></div>
+    </div>
+
+    <div class="status" id="status">À espera do primeiro comentário…</div>
   </div>
-  <script src="script.js"></script>
+
+  <script src="./script.js"></script>
 </body>
 </html>
