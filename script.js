@@ -1,11 +1,11 @@
 const params = new URLSearchParams(window.location.search);
 
 const title = params.get("title") || "Delay vs Orador";
-const seconds = Math.max(3, parseInt(params.get("seconds") || "30", 10));          // duração do ciclo da barra
-const phraseEvery = Math.max(2, parseInt(params.get("phraseEvery") || "4", 10));  // troca de frase
-const domain = (params.get("domain") || "http://localhost:4900").replace(/\/$/, "");
+const seconds = Math.max(3, parseInt(params.get("seconds") || "30", 10));
+const phraseEvery = Math.max(2, parseInt(params.get("phraseEvery") || "4", 10));
+const domain = (params.get("domain") || "http://localhost:3900").replace(/\/$/, "");
+const debug = params.get("debug") === "1"; // ?debug=1
 
-// frases por URL (separadas por |)
 const phrasesParam = params.get("phrases") || "";
 const defaultPhrases = [
   "Vamos esperar… mas com estilo.",
@@ -28,14 +28,10 @@ if (phrasesParam.trim()) {
     .split("|")
     .map(s => decodeURIComponent(s).trim())
     .filter(Boolean);
-
   if (!phrases.length) phrases = defaultPhrases;
 }
 
-const EMOJIS = [
-  "⏳","🛰️","📡","🧠","🫠","🫡","🤹‍♂️","🧃","🍿","🫧",
-  "👀","🧩","🌀","✨","💬","📨","🐢","🚀","🎭","🕰️"
-];
+const EMOJIS = ["⏳","🛰️","📡","🧠","🫠","🫡","🤹‍♂️","🧃","🍿","🫧","👀","🧩","🌀","✨","💬","📨","🐢","🚀","🎭","🕰️"];
 
 const $title = document.getElementById("title");
 const $phrase = document.getElementById("phrase");
@@ -45,18 +41,28 @@ const $status = document.getElementById("status");
 $title.textContent = decodeURIComponent(title);
 
 let running = true;
-let seenAnyChat = false;
+
+// --- baseline (estado inicial do wordcloud)
+let baseline = "";        // conteúdo inicial normalizado
+let baselineSet = false;  // já definimos baseline?
+let lastCloud = "";       // último cloud visto (normalizado)
 
 let phraseIndex = 0;
 let barStartTs = performance.now();
 let phraseTimer = null;
 
-// =====================
-// Frases
-// =====================
+// ---------- helpers ----------
+function normalizeCloud(s) {
+  // normaliza para comparar: lowercase + remove espaços redundantes
+  return String(s || "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function showPhrase(text) {
   $phrase.style.animation = "none";
-  void $phrase.offsetWidth; // reflow
+  void $phrase.offsetWidth;
   $phrase.textContent = text;
   $phrase.style.animation = "";
 }
@@ -76,15 +82,10 @@ function nextPhrase() {
 }
 
 function startPhraseLoop() {
-  // primeira frase
   showPhrase(withRandomEmoji(phrases[0]));
-  // loop independente
   phraseTimer = setInterval(nextPhrase, phraseEvery * 1000);
 }
 
-// =====================
-// Barra progressiva (loop)
-// =====================
 function tickBar(now) {
   if (!running) return;
 
@@ -100,9 +101,6 @@ function tickBar(now) {
   requestAnimationFrame(tickBar);
 }
 
-// =====================
-// Emojis flutuantes (subtil)
-// =====================
 function spawnFloatingEmoji() {
   if (!running) return;
 
@@ -127,23 +125,79 @@ function spawnFloatingEmoji() {
   setTimeout(() => { emoji.style.opacity = "0"; }, 2600);
   setTimeout(() => { emoji.remove(); }, 3400);
 
-  const nextIn = Math.floor(Math.random() * 500) + 700; // 700–1200ms
+  const nextIn = Math.floor(Math.random() * 500) + 700;
   setTimeout(spawnFloatingEmoji, nextIn);
 }
 
-// =====================
-// Wordcloud: pára no 1º comentário
-// =====================
+function stopOnFirstComment() {
+  running = false;
+  if (phraseTimer) clearInterval(phraseTimer);
+
+  $bar.style.width = "100%";
+  $status.textContent = "Chegou! ✅";
+  showPhrase("Ok… agora sim. Bora lá. 🎬✨");
+}
+
+// ---------- debug overlay ----------
+let $debug;
+if (debug) {
+  $debug = document.createElement("div");
+  $debug.style.position = "fixed";
+  $debug.style.left = "12px";
+  $debug.style.bottom = "12px";
+  $debug.style.padding = "8px 10px";
+  $debug.style.borderRadius = "12px";
+  $debug.style.fontFamily = "system-ui, -apple-system, Segoe UI, Roboto";
+  $debug.style.fontSize = "12px";
+  $debug.style.color = "rgba(255,255,255,0.92)";
+  $debug.style.background = "rgba(0,0,0,0.45)";
+  $debug.style.border = "1px solid rgba(255,255,255,0.18)";
+  $debug.style.backdropFilter = "blur(8px)";
+  $debug.style.maxWidth = "46vw";
+  $debug.style.whiteSpace = "pre-wrap";
+  document.body.appendChild($debug);
+}
+
+function setDebug(text) {
+  if ($debug) $debug.textContent = text;
+}
+
+// ---------- wordcloud polling ----------
 async function pollWordcloud() {
   if (!running) return;
 
   try {
     const r = await fetch(`${domain}/wordcloud`, { cache: "no-store" });
     const data = await r.json();
-    const raw = (data.wordcloud || "").trim();
 
-    if (raw.length > 0 && !seenAnyChat) {
-      seenAnyChat = true;
+    const cloud = normalizeCloud(data.wordcloud || "");
+    const total = (data.totalAttendees ?? "");
+    const viewOnly = (data.viewOnly ?? "");
+
+    // 1) Definir baseline ao arrancar (primeira leitura)
+    if (!baselineSet) {
+      baseline = cloud;          // baseline é o estado “antigo”
+      lastCloud = cloud;
+      baselineSet = true;
+
+      $status.textContent = "À espera do primeiro comentário…";
+      setDebug(`DEBUG\nbaselineSet: true\nbaseline(len): ${baseline.length}\ncloud(len): ${cloud.length}\ntotalAttendees: ${total}\nviewOnly: ${viewOnly}`);
+      setTimeout(pollWordcloud, 650);
+      return;
+    }
+
+    // 2) Só dispara se o conteúdo mudou desde o baseline (ou desde a última leitura)
+    //    Isto evita saltar logo para “chegou” por histórico antigo.
+    const changedFromBaseline = cloud !== baseline && cloud.length >= baseline.length;
+    const changedFromLast = cloud !== lastCloud;
+
+    setDebug(
+      `DEBUG\nbaseline(len): ${baseline.length}\ncloud(len): ${cloud.length}\nchangedFromBaseline: ${changedFromBaseline}\nchangedFromLast: ${changedFromLast}\nlastCloud(len): ${lastCloud.length}\n(total: ${total} / viewOnly: ${viewOnly})`
+    );
+
+    lastCloud = cloud;
+
+    if (changedFromBaseline && changedFromLast && cloud.length > 0) {
       stopOnFirstComment();
       return;
     }
@@ -151,27 +205,17 @@ async function pollWordcloud() {
     $status.textContent = "À espera do primeiro comentário…";
   } catch (e) {
     $status.textContent = "Sem ligação ao wordcloud (confirma domain/3900).";
+    setDebug(`DEBUG\nErro: ${String(e?.message || e)}`);
   }
 
   setTimeout(pollWordcloud, 650);
 }
 
-function stopOnFirstComment() {
-  running = false;
-
-  if (phraseTimer) clearInterval(phraseTimer);
-
-  $bar.style.width = "100%";
-  $status.textContent = "Chegou! ✅";
-  $status.classList.add("good");
-
-  showPhrase("Ok… agora sim. Bora lá. 🎬✨");
-}
-
-// (Opcional) limpar no arranque
+// (Opcional) tentar limpar no arranque
+// Nota: pode falhar no OBS se houver bloqueio de mixed content.
+// Mesmo que falhe, o baseline evita disparar por histórico.
 fetch(`${domain}/clear-chat`, { mode: "no-cors" }).catch(() => {});
 
-// start
 startPhraseLoop();
 requestAnimationFrame(tickBar);
 spawnFloatingEmoji();
