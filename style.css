@@ -1,74 +1,87 @@
-body {
-  font-family: 'Montserrat', sans-serif;
-  background: transparent;
-  color: white;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  justify-content: center;
+:root{
+  --text: rgba(255,255,255,0.95);
+  --muted: rgba(255,255,255,0.72);
+  --stroke: rgba(255,255,255,0.18);
+  --glass: rgba(0,0,0,0.30);
+
+  --accentA: #60a5fa;
+  --accentB: #fb923c;
+}
+
+*{ box-sizing:border-box; }
+
+body{
+  margin:0;
+  background: transparent; /* OBS overlay */
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  color: var(--text);
+}
+
+.wrap{
+  width: 1100px;
+  max-width: 92vw;
+  margin: 40px auto;
+  display:flex;
+  flex-direction: column;
+  gap: 14px;
   align-items: center;
-  height: 100vh;
   text-align: center;
 }
 
-#game-container {
-  background: rgba(0, 0, 0, 0.6);
-  padding: 20px 40px;
-  border-radius: 12px;
-  text-align: center;
-  max-width: 500px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-  transition: background-color 1s ease-in-out;
+.title{
+  font-size: 42px;
+  font-weight: 900;
+  letter-spacing: 0.3px;
+  text-shadow: 0 10px 40px rgba(0,0,0,0.55);
 }
 
-h1 {
-  font-size: 2.8em;
-  color: white;
-  margin-bottom: 10px;
-  text-transform: uppercase;
-}
-
-#delay-message {
-  font-size: 1.8em;
-  margin-bottom: 20px;
-  color: white;
-}
-
-#emoji-display {
-  font-size: 5rem;
-  animation: emojiBounce 1s infinite ease-in-out;
-}
-
-/* Animação do emoji */
-@keyframes emojiBounce {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.2);
-  }
-}
-
-/* Barra de Progresso */
-.progress-bar {
-  margin-top: 20px;
+.bubble{
   width: 100%;
-  height: 10px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 5px;
-  overflow: hidden;
+  border: 1px solid var(--stroke);
+  background: linear-gradient(135deg, rgba(96,165,250,0.16), rgba(251,146,60,0.10), var(--glass));
+  border-radius: 18px;
+  padding: 22px 26px;
+  box-shadow: 0 30px 90px rgba(0,0,0,0.55);
+  backdrop-filter: blur(10px);
 }
 
-.progress {
+.phrase{
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1.2;
+  opacity: 0;
+  transform: translateY(8px);
+  animation: in 380ms ease forwards;
+}
+
+@keyframes in{
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.bar{
+  width: 100%;
+  height: 12px;
+  border-radius: 999px;
+  overflow:hidden;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(0,0,0,0.22);
+}
+
+.barFill{
   height: 100%;
-  background: #ffcc00;
-  width: 0%; /* Inicialmente vazio */
-  transition: width 0.5s ease-out;
+  width: 0%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accentA), var(--accentB));
+  transition: width 120ms linear;
 }
 
-#comments-status {
-  margin-top: 20px;
-  font-size: 1.5em;
-  color: #00ff00;
-  display: none;
+.status{
+  font-size: 14px;
+  color: var(--muted);
+  letter-spacing: 0.2px;
+  text-shadow: 0 10px 30px rgba(0,0,0,0.55);
+}
+
+.good{
+  color: rgba(255,255,255,0.92);
 }
